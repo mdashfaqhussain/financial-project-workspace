@@ -1,0 +1,13 @@
+package com.hashedin.financialgoal.service;
+
+import org.springframework.http.ResponseEntity;
+
+import com.hasdedin.user.dto.RegisterUserdto;
+import com.hasdedin.user.dto.ResponseModel;
+import com.hashedin.financialgoal.dto.FinancialGoalDto;
+
+public interface IFinancialService {
+	
+	ResponseEntity<ResponseModel>  saveFinanceGoal(FinancialGoalDto financialGoalDto);
+
+}

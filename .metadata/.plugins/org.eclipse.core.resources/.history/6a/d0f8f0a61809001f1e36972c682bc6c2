@@ -1,0 +1,5 @@
+package com.hashedin.financialgoal.config;
+
+public class ProjectConfig {
+
+}

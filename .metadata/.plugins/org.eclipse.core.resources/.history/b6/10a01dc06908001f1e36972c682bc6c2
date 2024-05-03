@@ -1,0 +1,16 @@
+package com.hasdedin.user.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import com.hasdedin.user.utility.ResponseUtility;
+
+@
+public class ProjectConfiguration {
+	
+	@Bean
+	ResponseUtility responseUtility() {
+		return new ResponseUtility();
+	}
+
+}

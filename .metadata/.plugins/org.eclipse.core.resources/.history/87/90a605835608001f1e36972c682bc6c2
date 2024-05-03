@@ -1,0 +1,11 @@
+package com.hasdedin.user.constants;
+
+import org.springframework.http.HttpStatus;
+
+public class ProjectContants {
+	
+	public static final int USER_ALREADY_EXISTS_STATUS_CODE = HttpStatus.CONFLICT.value();
+    public static final String USER_ALREADY_EXISTS_MESSAGE = "User with this email already exists";
+    public static final String USER_ALREADY_EXISTS_STATUS = "Conflict";
+
+}

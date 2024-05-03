@@ -1,0 +1,5 @@
+package com.hasdedin.user.service.impl;
+
+public class JwtService {
+
+}

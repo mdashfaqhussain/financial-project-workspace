@@ -1,0 +1,5 @@
+package com.hasdedin.user.controller;
+
+public class UserController {
+
+}

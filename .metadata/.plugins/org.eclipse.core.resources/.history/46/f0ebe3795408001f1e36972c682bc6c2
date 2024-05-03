@@ -1,0 +1,42 @@
+package com.hasdedin.user.service.impl;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.hasdedin.user.dto.LoginUserdto;
+import com.hasdedin.user.dto.RegisterUserdto;
+import com.hasdedin.user.dto.ResponseModel;
+import com.hasdedin.user.repository.IUserRepository;
+import com.hasdedin.user.service.IAuthenticationService;
+
+
+@Service
+public class AuthenticationService implements IAuthenticationService {
+	
+	
+	private IUserRepository repository;
+	
+	private PasswordEncoder encoder;
+	
+	public AuthenticationService(IUserRepository repository, PasswordEncoder encoder) {
+		super();
+		this.repository = repository;
+		this.encoder = encoder;
+	}
+
+	
+
+	@Override
+	public ResponseEntity<ResponseModel> saveUser(RegisterUserdto registerUserdto) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ResponseEntity<ResponseModel> loginUser(LoginUserdto loginUserdto) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

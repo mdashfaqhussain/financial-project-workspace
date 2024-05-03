@@ -1,0 +1,16 @@
+package com.hashedin.financialgoal.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import com.hasdedin.user.entity.BudgetUser;
+
+@Configuration
+public class ProjectConfig {
+	
+	@Bean
+	BudgetUser budgetUser() {
+		return new BudgetUser();
+	}
+
+}

@@ -1,0 +1,32 @@
+package com.hashedin.financialgoal.utility;
+
+import java.time.LocalDate;
+
+import com.hasdedin.user.dto.RegisterUserdto;
+import com.hasdedin.user.entity.BudgetUser;
+import com.hashedin.financialgoal.dto.FinancialGoalDto;
+import com.hashedin.financialgoal.entity.FinancialGoal;
+
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+
+public class FinancialMapper {
+
+	
+	public  static FinancialGoal convertToGoal(FinancialGoalDto finGoalDto) {
+        FinancialGoal financialGoal = new FinancialGoal();
+        financialGoal.setGoalName(finGoalDto.getGoalName());
+        financialGoal.setStartDate(finGoalDto.getGoalStartDate());
+        financialGoal.setEndDate(finGoalDto.getGoalEndDate());
+        financialGoal.setTargetAmount(finGoalDto.getTargetAmount());
+        financialGoal.setCurrentAmount(finGoalDto.getCurrentAmount());
+       return financialGoal;
+        
+       
+        
+    }
+}
+
+

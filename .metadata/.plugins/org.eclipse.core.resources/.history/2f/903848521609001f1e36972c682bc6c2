@@ -1,0 +1,24 @@
+package com.hashedin.financialgoal.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import com.hasdedin.user.dto.ResponseModel;
+import com.hashedin.financialgoal.dto.FinancialGoalDto;
+import com.hashedin.financialgoal.repository.IFinancialGoalRepository;
+import com.hashedin.financialgoal.service.IFinancialService;
+
+@Service
+public class FinancialGoal implements IFinancialService{
+	
+	@Autowired
+	private IFinancialGoalRepository repository;
+
+	@Override
+	public ResponseEntity<ResponseModel> saveFinanceGoal(FinancialGoalDto financialGoalDto) {
+			
+		return null;
+	}
+
+}

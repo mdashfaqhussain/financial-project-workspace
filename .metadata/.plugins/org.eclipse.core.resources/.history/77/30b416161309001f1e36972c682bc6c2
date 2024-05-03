@@ -1,0 +1,17 @@
+package com.hashedin.financialgoal.dto;
+
+import java.time.LocalDate;
+
+import lombok.Data;
+
+@Data
+public class FinancialGoalDto {
+	
+	private String goalName;
+    private LocalDate goalStartDate;
+    private LocalDate goalEndDate;
+    private double targetAmount;
+    private double currentAmount;
+    private Integer userId;
+
+}

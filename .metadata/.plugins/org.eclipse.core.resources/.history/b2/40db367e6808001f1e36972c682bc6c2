@@ -1,0 +1,25 @@
+package com.hasdedin.user.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.hasdedin.user.dto.LoginUserdto;
+import com.hasdedin.user.dto.RegisterUserdto;
+import com.hasdedin.user.dto.ResponseModel;
+import com.hasdedin.user.service.IAuthenticationService;
+
+@RestController
+public class UserController {
+
+	@Autowired
+	IAuthenticationService authenticationService;
+	
+	public ResponseEntity<ResponseModel> register(RegisterUserdto registerUserdto){
+		return authenticationService.saveUser(registerUserdto);
+	}
+	
+	public ResponseEntity<ResponseModel> login(LoginUserdto loginUserdto){
+		return authenticationService.loginUser(loginUserdto);
+	}
+}

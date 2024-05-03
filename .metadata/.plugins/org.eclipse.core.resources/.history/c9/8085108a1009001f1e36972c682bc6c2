@@ -1,0 +1,12 @@
+
+#Application
+spring.application.name=FINANCIAL-GOAL
+server.port=8081
+
+#datasource
+spring.datasource.url=jdbc:postgresql://localhost:5432/springbootdb
+spring.datasource.username=postgres
+spring.datasource.password=postgres@123
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.show-sql=true

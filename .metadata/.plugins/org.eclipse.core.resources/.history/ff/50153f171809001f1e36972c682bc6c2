@@ -1,0 +1,35 @@
+package com.hashedin.financialgoal.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hasdedin.user.dto.ResponseModel;
+import com.hasdedin.user.utility.Mapper;
+import com.hashedin.financialgoal.constant.ProjectConstant;
+import com.hashedin.financialgoal.dto.FinancialGoalDto;
+import com.hashedin.financialgoal.entity.FinancialGoal;
+import com.hashedin.financialgoal.repository.IFinancialGoalRepository;
+import com.hashedin.financialgoal.service.IFinancialService;
+import com.hashedin.financialgoal.utility.FinancialMapper;
+
+@Service
+public class FinancialGoalImpl implements IFinancialService{
+	
+	@Autowired
+	private IFinancialGoalRepository repository;
+	
+	
+
+	@Override
+	public ResponseEntity<ResponseModel> saveFinanceGoal(FinancialGoalDto financialGoalDto) {
+		 FinancialGoal goal = FinancialMapper.convertToGoal(financialGoalDto);
+		 ResponseModel model = new ResponseModel();
+		 model.setStatuscode(ProjectConstant.STATUS_CODE_CREATED_STATUS_CODE);
+		 model.setStatus(ProjectConstant.STATUS_CODE_CREATED_STATUS);
+		 model.setMessage(ProjectConstant.CREATE_FINANCIAL_GOAL_MESSAGE);
+		return null;
+	}
+
+}

@@ -1,0 +1,20 @@
+package com.hasdedin.user.utility;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hasdedin.user.dto.RegisterUserdto;
+import com.hasdedin.user.entity.BudgetUser;
+
+@Component
+public class Mapper {
+	
+	@Autowired
+	ObjectMapper mapper;
+	
+	public  BudgetUser convertToBudgetUser(RegisterUserdto registerDto) {
+        return mapper.convertValue(registerDto, BudgetUser.class);
+    }
+
+}

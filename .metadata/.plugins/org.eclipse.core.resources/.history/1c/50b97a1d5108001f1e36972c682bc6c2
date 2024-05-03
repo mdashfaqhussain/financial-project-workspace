@@ -1,0 +1,5 @@
+package com.hasdedin.user.service;
+
+public interface IAuthenticationService {
+
+}

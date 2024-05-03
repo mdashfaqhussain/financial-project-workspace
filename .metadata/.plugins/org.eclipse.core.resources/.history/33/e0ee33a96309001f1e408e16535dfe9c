@@ -1,0 +1,5 @@
+package com.hashedin.financialgoal.utility;
+
+public class ResponseModel {
+
+}
