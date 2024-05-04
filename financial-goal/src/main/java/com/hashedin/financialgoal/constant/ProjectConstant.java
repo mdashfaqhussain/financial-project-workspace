@@ -26,4 +26,7 @@ public class ProjectConstant {
 	public static final String DELETE_ERROR_MESSAGE = "Failed to delete record";
 	
 	public static final String RESOURCE_NOT_FOUND_MESSAGE = "Resource not found";
+	
+	
+	public static final String VALIDATION_EXCEPTION_MESSAGE="Entered the amount less than total amount";
 }

@@ -1,5 +1,0 @@
-package com.hashedin.financialgoal.service;
-
-public interface IFinancialService {
-
-}

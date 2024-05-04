@@ -1,0 +1,150 @@
+package com.hashedin.financialgoal.controller;
+
+import java.time.LocalDate;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.hashedin.financialgoal.dto.FinancialGoalDto;
+import com.hashedin.financialgoal.dto.GoalAddAmountDto;
+import com.hashedin.financialgoal.service.IFinancialGoalService;
+import com.hashedin.financialgoal.utility.ResponseModel;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+
+import io.swagger.annotations.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import java.time.LocalDate;
+
+@RestController
+
+public class FinancialGoalRepository {
+	
+	@Operation("Create a new financial goal")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully created the financial goal"),
+            @ApiResponse(code = 400, message = "Invalid input data")
+    })
+
+    @Autowired
+    private IFinancialGoalService financialGoalService;
+
+    @Operation(
+    		tags = "New Financial Goal",
+    		description = "Create a new financial goal",
+    		responses = @ApiResponse(
+    				responseCode = 200,
+    				description = "Success"
+    				)
+    		)
+    @PostMapping("/create")
+    public ResponseEntity<ResponseModel> saveGoal(@Valid @RequestBody FinancialGoalDto goalDto) {
+        return financialGoalService.saveGoal(goalDto);
+    }
+
+    @ApiOperation(value = "Delete a financial goal by ID")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully deleted the financial goal"),
+            @ApiResponse(code = 404, message = "Financial goal not found")
+    })
+    @DeleteMapping("/delete/{goalId}")
+    public ResponseEntity<ResponseModel> deleteFinancialGoal(@PathVariable int goalId) {
+        return financialGoalService.deleteFinancialGoal(goalId);
+    }
+
+    @ApiOperation(value = "Get all financial goals")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved all financial goals")
+    })
+    @GetMapping("/all")
+    public ResponseEntity<ResponseModel> getAllFinancialGoals() {
+        return financialGoalService.getAllFinancialGoals();
+    }
+
+    @ApiOperation(value = "Update an existing financial goal")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully updated the financial goal"),
+            @ApiResponse(code = 400, message = "Invalid input data"),
+            @ApiResponse(code = 404, message = "Financial goal not found")
+    })
+    @PutMapping("/update/{goalId}")
+    public ResponseEntity<ResponseModel> updateFinancialGoal(@PathVariable int goalId, @Valid @RequestBody FinancialGoalDto financialGoalDto) {
+        return financialGoalService.updateFinancialGoal(goalId, financialGoalDto);
+    }
+
+    @ApiOperation(value = "Get financial goals by user ID")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved financial goals by user ID"),
+            @ApiResponse(code = 404, message = "No financial goals found for the user ID")
+    })
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<ResponseModel> getFinancialGoalsByUserId(@PathVariable int userId) {
+        return financialGoalService.getFinancialGoalsByUserId(userId);
+    }
+
+    @ApiOperation(value = "Get financial goals by start date")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved financial goals by start date"),
+            @ApiResponse(code = 400, message = "Invalid input data")
+    })
+    @GetMapping("/startDate/{startDate}")
+    public ResponseEntity<ResponseModel> getFinancialGoalsByStartDate(@PathVariable @Valid @NotEmpty LocalDate startDate) {
+        return financialGoalService.getFinancialGoalsByStartDate(startDate);
+    }
+
+    @ApiOperation(value = "Get financial goals by end date")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved financial goals by end date"),
+            @ApiResponse(code = 400, message = "Invalid input data")
+    })
+    @GetMapping("/endDate/{endDate}")
+    public ResponseEntity<ResponseModel> getFinancialGoalsByEndDate(@PathVariable @Valid @NotEmpty LocalDate endDate) {
+        return financialGoalService.getFinancialGoalsByEndDate(endDate);
+    }
+
+    @ApiOperation(value = "Get financial goals between two dates")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved financial goals between the specified dates"),
+            @ApiResponse(code = 400, message = "Invalid input data")
+    })
+    @GetMapping("/betweenDates/{startDate}/{endDate}")
+    public ResponseEntity<ResponseModel> getFinancialGoalsBetweenDates(@PathVariable @Valid @NotEmpty LocalDate startDate, @PathVariable @Valid @NotEmpty LocalDate endDate) {
+        return financialGoalService.getFinancialGoalsBetweenDates(startDate, endDate);
+    }
+
+    @ApiOperation(value = "Get related financial goals for a user between two dates")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved related financial goals"),
+            @ApiResponse(code = 400, message = "Invalid input data")
+    })
+    @GetMapping("/relatedGoals/{userId}/{startDate}/{endDate}")
+    public ResponseEntity<ResponseModel> getRelatedFinancialGoals(@PathVariable int userId, @PathVariable @Valid @NotEmpty LocalDate startDate, @PathVariable @Valid @NotEmpty LocalDate endDate) {
+        return financialGoalService.getRelatedFinancialGoals(userId, startDate, endDate);
+    }
+
+    @ApiOperation(value = "Add an expense to a financial goal")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully added the expense"),
+            @ApiResponse(code = 400, message = "Invalid input data")
+    })
+    @PostMapping("/addExpense")
+    public ResponseEntity<ResponseModel> addExpense(@Valid @RequestBody GoalAddAmountDto amountDto) {
+        return financialGoalService.addExpense(amountDto);
+    }
+}

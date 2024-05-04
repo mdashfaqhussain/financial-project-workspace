@@ -1,0 +1,18 @@
+package com.hashedin.financialgoal.config;
+
+import org.springdoc.core.GroupedOpenApi;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class SwaggerConfig {
+	
+	@Bean
+     GroupedOpenApi groupedOpenApi() {
+        return GroupedOpenApi.builder()
+            .group("financial-goals")
+            .packagesToScan("com.hashedin.financialgoal.controller")
+            .build();
+    }
+
+}

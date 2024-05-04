@@ -1,7 +1,0 @@
-package com.hashedin.financialgoal.entity;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface IFinancialGoalRepository  extends JpaRepository<FinancialGoal, Integer>{
-
-}

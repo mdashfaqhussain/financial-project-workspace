@@ -1,0 +1,16 @@
+package com.hashedin.financialgoal.utility;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+
+
+public class ResponseUtility {
+	
+	
+	public ResponseEntity<ResponseModel> createResponse(ResponseModel model) {
+        HttpStatus httpStatus = model.getStatus().equalsIgnoreCase("SUCCESS") ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(httpStatus).body(model);
+    }
+
+}

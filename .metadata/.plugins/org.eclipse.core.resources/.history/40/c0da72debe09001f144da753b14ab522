@@ -1,0 +1,102 @@
+package com.hashedin.gateway.config;
+
+import java.util.List;
+
+import org.apache.hc.core5.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.gateway.filter.GatewayFilter;
+import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.google.common.net.HttpHeaders;
+import com.hashedin.gateway.filter.JwtService;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtParser;
+import io.jsonwebtoken.Jwts;
+import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
+
+@Component
+@Slf4j
+public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
+
+	public static class Config {
+	}
+
+	@Autowired
+	private RouteValidator routeValidator;
+
+	@Autowired
+	private JwtService jwtService;
+
+	public AuthenticationFilter() {
+		super(Config.class);
+	}
+
+	@Override
+	public GatewayFilter apply(Config config) {
+		return ((exchange, chain) -> {
+			if (routeValidator.isSecured.apply(exchange.getRequest())) {
+				if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
+					// Token is missing
+					log.error("Missing authorization header");
+					return Mono.error(new ResponseStatusException(HttpStatus.SC_UNAUTHORIZED,
+							"Missing authorization header", null));
+				}
+
+				String authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
+				if (authHeader != null && authHeader.startsWith("Bearer ")) {
+					authHeader = authHeader.substring(7);
+					int userId;
+					try {
+						userId = extractUserIdFromToken(authHeader);
+					} catch (RuntimeException e) {
+						log.error("Failed to extract user ID from JWT token", e);
+						return Mono.error(new ResponseStatusException(HttpStatus.SC_BAD_REQUEST,
+								"Failed to extract user ID from JWT token", e));
+					}
+					List<String> roles;
+					try {
+						roles = extractRolesFromToken(authHeader);
+					} catch (RuntimeException e) {
+						log.error("Failed to extract roles from JWT token", e);
+						return Mono.error(new ResponseStatusException(HttpStatus.SC_BAD_REQUEST,
+								"Failed to extract roles from JWT token", e));
+					}
+					
+					ServerHttpRequest request = exchange.getRequest().mutate()
+							.header("x-user-id", String.valueOf(userId)).header("x-user-roles", String.join(",", roles))
+							.build();
+					exchange = exchange.mutate().request(request).build();
+				}
+
+				try {
+					jwtService.validateToken(authHeader);
+				} catch (RuntimeException e) {
+					// Token validation failed
+					log.error("Invalid or expired token", e);
+					return Mono.error(
+							new ResponseStatusException(HttpStatus.SC_UNAUTHORIZED, "Invalid or expired token", e));
+				}
+			}
+			return chain.filter(exchange);
+		});
+	}
+
+	private List<String> extractRolesFromToken(String jwtToken) {
+		JwtParser parser = Jwts.parserBuilder().build();
+		Claims claims = parser.parseClaimsJws(jwtToken).getBody();
+		return (List<String>) claims.get("roles");
+	}
+	
+	private int extractUserIdFromToken(String jwtToken) {
+	    JwtParser parser = Jwts.parserBuilder().build();
+	    Claims claims = parser.parseClaimsJws(jwtToken).getBody();
+	    return (int) claims.get("user_id");
+	}
+
+
+}

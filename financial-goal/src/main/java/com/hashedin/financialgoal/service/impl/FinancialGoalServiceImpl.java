@@ -1,22 +1,32 @@
 package com.hashedin.financialgoal.service.impl;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import com.hashedin.financialgoal.constant.ProjectConstant;
 import com.hashedin.financialgoal.dto.FinancialGoalDto;
+import com.hashedin.financialgoal.dto.GoalAddAmountDto;
+import com.hashedin.financialgoal.entity.BudgetUser;
 import com.hashedin.financialgoal.entity.FinancialGoal;
 import com.hashedin.financialgoal.exception.ResourceNotFoundException;
+import com.hashedin.financialgoal.exception.ValidationException;
 import com.hashedin.financialgoal.repository.IFinancialGoalRepository;
+import com.hashedin.financialgoal.repository.IUserRepository;
 import com.hashedin.financialgoal.service.IFinancialGoalService;
 import com.hashedin.financialgoal.utility.Mapper;
 import com.hashedin.financialgoal.utility.ResponseModel;
 import com.hashedin.financialgoal.utility.ResponseUtility;
 
 import jakarta.ws.rs.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
+@Service
 public class FinancialGoalServiceImpl implements IFinancialGoalService {
 
 	@Autowired
@@ -25,23 +35,75 @@ public class FinancialGoalServiceImpl implements IFinancialGoalService {
 	@Autowired
 	private ResponseUtility responseUtility;
 
+	@Autowired
+	private IUserRepository userRepository;
+
 	@Override
 	public ResponseEntity<ResponseModel> saveGoal(FinancialGoalDto goalDto) {
 		try {
+			if (goalDto.getEnteredAmount() > goalDto.getTotalAmount()) {
+				throw new ValidationException("Current amount must be less than or equal to the total amount");
+			}
+
+			// Retrieve the BudgetUser instance by its ID
+			Optional<BudgetUser> userOptional = userRepository.findById(2);
+			if (!userOptional.isPresent()) {
+				throw new ResourceNotFoundException("User not found");
+			}
+			BudgetUser user = userOptional.get();
+
+			// Convert FinancialGoalDto to FinancialGoal entity
 			FinancialGoal financialGoal = Mapper.convertToEntity(goalDto);
-			financialGoal.setUserId(2);
+			// Set the BudgetUser instance to the user field of FinancialGoal
+			financialGoal.setUser(user);
+
+			// Save the FinancialGoal entity
 			repository.save(financialGoal);
-			ResponseModel model = new ResponseModel();
-			model.setMessage(ProjectConstant.CREATE_SUCCESS_MESSAGE);
-			model.setStatus(ProjectConstant.SUCCESS_STATUS);
-			model.setStatuscode(ProjectConstant.CREATED_CODE);
-			return responseUtility.createResponse(model);
+
+			return responseUtility.createSuccessResponse(ProjectConstant.CREATE_SUCCESS_MESSAGE, null);
+		} catch (ValidationException e) {
+			log.error("Validation exception occurred: {}", e.getMessage());
+			return responseUtility.createErrorResponse(e.getMessage());
+		} catch (ResourceNotFoundException e) {
+			log.error("Resource not found exception occurred: {}", e.getMessage());
+			return responseUtility.createErrorResponse("User not found");
 		} catch (Exception e) {
-			ResponseModel errorModel = new ResponseModel();
-			errorModel.setMessage(ProjectConstant.CREATE_ERROR_MESSAGE);
-			errorModel.setStatus(ProjectConstant.ERROR_STATUS);
-			errorModel.setStatuscode(ProjectConstant.ERROR_CODE);
-			return responseUtility.createResponse(errorModel);
+			log.error("Error occurred while saving financial goal: {}", e.getMessage());
+			return responseUtility.createErrorResponse(ProjectConstant.CREATE_ERROR_MESSAGE);
+		}
+	}
+
+	@Override
+	public ResponseEntity<ResponseModel> addExpense(GoalAddAmountDto amountDto) {
+		try {
+			FinancialGoal existingGoal = repository.findById(amountDto.getGoalId())
+					.orElseThrow(() -> new ResourceNotFoundException("Financial goal not found"));
+
+			double currentEnteredAmount = existingGoal.getEnteredAmount();
+			double totalAmountFromDB = existingGoal.getTotalAmount();
+			double newEnteredAmount = currentEnteredAmount + amountDto.getExpenseAmount();
+
+			if (newEnteredAmount <= totalAmountFromDB) {
+
+				existingGoal.setEnteredAmount(newEnteredAmount);
+				repository.save(existingGoal);
+
+				return responseUtility.createSuccessResponse(ProjectConstant.CREATE_SUCCESS_MESSAGE, null);
+			} else {
+				throw new ValidationException("Adding expense exceeds the total amount");
+			}
+		} catch (ResourceNotFoundException e) {
+			log.error("Resource not found exception occurred: {}", e.getMessage());
+
+			return responseUtility.createErrorResponse("Financial goal not found");
+		} catch (ValidationException e) {
+			log.error("Validation exception occurred: {}", e.getMessage());
+
+			return responseUtility.createErrorResponse(e.getMessage());
+		} catch (Exception e) {
+			log.error("Error occurred while adding expense: {}", e.getMessage());
+
+			return responseUtility.createErrorResponse("Error adding expense");
 		}
 	}
 
@@ -49,17 +111,10 @@ public class FinancialGoalServiceImpl implements IFinancialGoalService {
 	public ResponseEntity<ResponseModel> deleteFinancialGoal(int goalId) {
 		try {
 			repository.deleteById(goalId);
-			ResponseModel model = new ResponseModel();
-			model.setMessage(ProjectConstant.DELETE_SUCCESS_MESSAGE);
-			model.setStatus(ProjectConstant.SUCCESS_STATUS);
-			model.setStatuscode(ProjectConstant.SUCCESS_CODE);
-			return responseUtility.createResponse(model);
+			return responseUtility.createSuccessResponse(ProjectConstant.DELETE_SUCCESS_MESSAGE, null);
 		} catch (Exception e) {
-			ResponseModel errorModel = new ResponseModel();
-			errorModel.setMessage(ProjectConstant.DELETE_ERROR_MESSAGE);
-			errorModel.setStatus(ProjectConstant.ERROR_STATUS);
-			errorModel.setStatuscode(ProjectConstant.ERROR_CODE);
-			return responseUtility.createResponse(errorModel);
+			log.error("Error occurred while deleting financial goal: {}", e.getMessage());
+			return responseUtility.createErrorResponse(ProjectConstant.DELETE_ERROR_MESSAGE);
 		}
 	}
 
@@ -67,18 +122,11 @@ public class FinancialGoalServiceImpl implements IFinancialGoalService {
 	public ResponseEntity<ResponseModel> getAllFinancialGoals() {
 		try {
 			List<FinancialGoal> financialGoals = repository.findAll();
-			ResponseModel model = new ResponseModel();
-			model.setData(financialGoals);
-			model.setMessage(ProjectConstant.READ_SUCCESS_MESSAGE);
-			model.setStatus(ProjectConstant.SUCCESS_STATUS);
-			model.setStatuscode(ProjectConstant.SUCCESS_CODE);
-			return responseUtility.createResponse(model);
+			return responseUtility.createSuccessResponse(ProjectConstant.READ_SUCCESS_MESSAGE, financialGoals);
 		} catch (Exception e) {
-			ResponseModel errorModel = new ResponseModel();
-			errorModel.setMessage(ProjectConstant.READ_ERROR_MESSAGE);
-			errorModel.setStatus(ProjectConstant.ERROR_STATUS);
-			errorModel.setStatuscode(ProjectConstant.ERROR_CODE);
-			return responseUtility.createResponse(errorModel);
+			log.error("Error occurred while fetching all financial goals: {}", e.getMessage());
+
+			return responseUtility.createErrorResponse(ProjectConstant.READ_ERROR_MESSAGE);
 		}
 	}
 
@@ -93,27 +141,70 @@ public class FinancialGoalServiceImpl implements IFinancialGoalService {
 			existingGoal.setEnteredAmount(financialGoalDto.getEnteredAmount());
 			existingGoal.setStartDate(financialGoalDto.getStartDate());
 			existingGoal.setEndDate(financialGoalDto.getEndDate());
-			
 
 			repository.save(existingGoal);
 
-			ResponseModel model = new ResponseModel();
-			model.setMessage(ProjectConstant.UPDATE_SUCCESS_MESSAGE);
-			model.setStatus(ProjectConstant.SUCCESS_STATUS);
-			model.setStatuscode(ProjectConstant.SUCCESS_CODE);
-			return responseUtility.createResponse(model);
+			return responseUtility.createSuccessResponse(ProjectConstant.UPDATE_SUCCESS_MESSAGE, null);
 		} catch (NotFoundException e) {
-			ResponseModel errorModel = new ResponseModel();
-			errorModel.setMessage("Financial goal not found");
-			errorModel.setStatus(ProjectConstant.ERROR_STATUS);
-			errorModel.setStatuscode(ProjectConstant.NOT_FOUND_CODE);
-			return responseUtility.createResponse(errorModel);
+			log.error("Resource not found exception occurred: {}", e.getMessage());
+
+			return responseUtility.createErrorResponse("Financial goal not found");
 		} catch (Exception e) {
-			ResponseModel errorModel = new ResponseModel();
-			errorModel.setMessage(ProjectConstant.UPDATE_ERROR_MESSAGE);
-			errorModel.setStatus(ProjectConstant.ERROR_STATUS);
-			errorModel.setStatuscode(ProjectConstant.ERROR_CODE);
-			return responseUtility.createResponse(errorModel);
+			log.error("Error occurred while updating financial goal: {}", e.getMessage());
+
+			return responseUtility.createErrorResponse(ProjectConstant.UPDATE_ERROR_MESSAGE);
+		}
+	}
+
+	@Override
+	public ResponseEntity<ResponseModel> getFinancialGoalsByStartDate(LocalDate startDate) {
+		try {
+			List<FinancialGoal> financialGoals = repository.findByStartDate(startDate);
+			return responseUtility.createSuccessResponse("Financial goals retrieved successfully", financialGoals);
+		} catch (Exception e) {
+			return responseUtility.createErrorResponse("Error retrieving financial goals by start date");
+		}
+	}
+
+	@Override
+	public ResponseEntity<ResponseModel> getFinancialGoalsByEndDate(LocalDate endDate) {
+		try {
+			List<FinancialGoal> financialGoals = repository.findByEndDate(endDate);
+			return responseUtility.createSuccessResponse("Financial goals retrieved successfully", financialGoals);
+		} catch (Exception e) {
+			return responseUtility.createErrorResponse("Error retrieving financial goals by end date");
+		}
+
+	}
+
+	@Override
+	public ResponseEntity<ResponseModel> getFinancialGoalsBetweenDates(LocalDate startDate, LocalDate endDate) {
+		try {
+			List<FinancialGoal> financialGoals = repository.findByStartDateBetween(startDate, endDate);
+			return responseUtility.createSuccessResponse("Financial goals retrieved successfully", financialGoals);
+		} catch (Exception e) {
+			return responseUtility.createErrorResponse("Error retrieving financial goals between dates");
+		}
+	}
+
+	@Override
+	public ResponseEntity<ResponseModel> getRelatedFinancialGoals(int userId, LocalDate startDate, LocalDate endDate) {
+
+		try {
+			List<FinancialGoal> financialGoals = repository.findByUserId(userId);
+			return responseUtility.createSuccessResponse("Financial goals retrieved successfully", financialGoals);
+		} catch (Exception e) {
+			return responseUtility.createErrorResponse("Error retrieving financial goals by user ID");
+		}
+	}
+
+	@Override
+	public ResponseEntity<ResponseModel> getFinancialGoalsByUserId(int userId) {
+		try {
+			List<FinancialGoal> financialGoals = repository.findByUserId(userId);
+			return responseUtility.createSuccessResponse(ProjectConstant.SUCCESS_STATUS, financialGoals);
+		} catch (Exception e) {
+			return responseUtility.createErrorResponse("Error retrieving financial goals by user ID");
 		}
 	}
 

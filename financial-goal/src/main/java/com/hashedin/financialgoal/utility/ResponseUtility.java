@@ -3,6 +3,8 @@ package com.hashedin.financialgoal.utility;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.hashedin.financialgoal.constant.ProjectConstant;
+
 
 
 public class ResponseUtility {
@@ -10,19 +12,21 @@ public class ResponseUtility {
 	
 	ResponseModel responseModel = new ResponseModel();
 	
-	public ResponseEntity<ResponseModel> createResponse(ResponseModel model){
-		responseModel.setStatuscode(model.getStatuscode());
-		responseModel.setStatus(model.getStatus());
-		responseModel.setMessage(model.getMessage());
-		responseModel.setData(model.getData());
-		
-		if(model.getStatus().equalsIgnoreCase("SUCCESS")) {
-			return ResponseEntity.status(HttpStatus.OK).body(responseModel);
-		}
-		else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseModel);
-		}
-		
-	}
+	public ResponseEntity<ResponseModel> createSuccessResponse(String message, Object data) {
+        ResponseModel model = new ResponseModel();
+        model.setMessage(message);
+        model.setStatus(ProjectConstant.SUCCESS_STATUS);
+        model.setStatuscode(ProjectConstant.SUCCESS_CODE);
+        model.setData(data);
+        return ResponseEntity.status(HttpStatus.OK).body(model);
+    }
 
+	
+	 public ResponseEntity<ResponseModel> createErrorResponse(String message) {
+	        ResponseModel model = new ResponseModel();
+	        model.setMessage(message);
+	        model.setStatus(ProjectConstant.ERROR_STATUS);
+	        model.setStatuscode(ProjectConstant.ERROR_CODE);
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(model);
+	    }
 }

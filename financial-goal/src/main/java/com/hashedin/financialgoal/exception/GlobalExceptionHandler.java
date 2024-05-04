@@ -17,21 +17,20 @@ public class GlobalExceptionHandler {
 	
 	@ExceptionHandler({ResourceNotFoundException.class})
 	public ResponseEntity<ResponseModel> handleResourceNotFoundException(ResourceNotFoundException ex) {
-	    ResponseModel responseModel = new ResponseModel();
-	    responseModel.setMessage(ProjectConstant.RESOURCE_NOT_FOUND_MESSAGE);
-	    responseModel.setStatuscode(ProjectConstant.NOT_FOUND_CODE);
-	    responseModel.setStatus(ProjectConstant.ERROR_STATUS);
-	    return responseUtility.createResponse(responseModel);
+	    return responseUtility.createErrorResponse(ProjectConstant.RESOURCE_NOT_FOUND_MESSAGE);
+	}
+	
+	@ExceptionHandler({ValidationException.class})
+	public ResponseEntity<ResponseModel> handleValidationException(ValidationException ex) {
+	    return responseUtility.createErrorResponse(ex.getMessage());
 	}
 
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ResponseModel> handleGenericException(Exception ex) {
-    	ResponseModel responseModel = new ResponseModel();
-    	responseModel.setStatus(ProjectConstant.ERROR_STATUS);
-    	responseModel.setStatuscode(ProjectConstant.ERROR_CODE);
-        return responseUtility.createResponse(responseModel);
-    }
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ResponseModel> handleGenericException(Exception ex) {
+	    return responseUtility.createErrorResponse(ProjectConstant.ERROR_STATUS);
+	}
+
 
 
 }

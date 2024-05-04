@@ -1,0 +1,124 @@
+package com.hashedin.financialgoal.controller;
+
+import java.time.LocalDate;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.hashedin.financialgoal.dto.FinancialGoalDto;
+import com.hashedin.financialgoal.dto.GoalAddAmountDto;
+import com.hashedin.financialgoal.entity.FinancialGoal;
+import com.hashedin.financialgoal.service.IFinancialGoalService;
+import com.hashedin.financialgoal.utility.ResponseModel;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/goal")
+@Tag(name = "Financial Goals", description = "Endpoints for managing financial goals")
+public class FinancialGoalRepository {
+
+    @Autowired
+    private IFinancialGoalService financialGoalService;
+
+    @Operation(summary = "Create a new financial goal")
+    @PostMapping("/create")
+    public ResponseEntity<ResponseModel> saveGoal(@Valid @RequestBody FinancialGoalDto goalDto) {
+        return financialGoalService.saveGoal(goalDto);
+    }
+
+    @Operation(summary = "Delete a financial goal by ID")
+    @DeleteMapping("/delete/{goalId}")
+    public ResponseEntity<ResponseModel> deleteFinancialGoal(
+            @Parameter(description = "ID of the financial goal to delete", example = "123") @PathVariable int goalId) {
+        return financialGoalService.deleteFinancialGoal(goalId);
+    }
+
+    @Operation(summary = "Get all financial goals")
+    @GetMapping("/all")
+    public ResponseEntity<ResponseModel> getAllFinancialGoals() {
+        return financialGoalService.getAllFinancialGoals();
+    }
+
+    @Operation(summary = "Update a financial goal by ID")
+    @PutMapping("/update/{goalId}")
+    public ResponseEntity<ResponseModel> updateFinancialGoal(
+            @Parameter(description = "ID of the financial goal to update", example = "123") @PathVariable int goalId,
+            @Valid @RequestBody FinancialGoalDto financialGoalDto) {
+        return financialGoalService.updateFinancialGoal(goalId, financialGoalDto);
+    }
+
+    @Operation(summary = "Get financial goals by user ID")
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<ResponseModel> getFinancialGoalsByUserId(
+            @Parameter(description = "ID of the user to fetch financial goals for", example = "123") @PathVariable int userId) {
+        return financialGoalService.getFinancialGoalsByUserId(userId);
+    }
+
+    @Operation(summary = "Get financial goals by start date")
+    @GetMapping("/startDate/{startDate}")
+    public ResponseEntity<ResponseModel> getFinancialGoalsByStartDate(
+            @Parameter(description = "Start date to filter financial goals", example = "2023-01-01")
+            @PathVariable @Valid @NotEmpty LocalDate startDate) {
+        return financialGoalService.getFinancialGoalsByStartDate(startDate);
+    }
+
+    @Operation(summary = "Get financial goals by end date")
+    @GetMapping("/endDate/{endDate}")
+    public ResponseEntity<ResponseModel> getFinancialGoalsByEndDate(
+            @Parameter(description = "End date to filter financial goals", example = "2023-12-31")
+            @PathVariable @Valid @NotEmpty LocalDate endDate) {
+        return financialGoalService.getFinancialGoalsByEndDate(endDate);
+    }
+
+    @Operation(summary = "Get financial goals between two dates")
+    @GetMapping("/betweenDates/{startDate}/{endDate}")
+    public ResponseEntity<ResponseModel> getFinancialGoalsBetweenDates(
+            @Parameter(description = "Start date to filter financial goals", example = "2023-01-01")
+            @PathVariable @Valid @NotEmpty LocalDate startDate,
+            @Parameter(description = "End date to filter financial goals", example = "2023-12-31")
+            @PathVariable @Valid @NotEmpty LocalDate endDate) {
+        return financialGoalService.getFinancialGoalsBetweenDates(startDate, endDate);
+    }
+
+    @Operation(summary = "Get related financial goals by user ID and date range")
+    @GetMapping("/relatedGoals/{userId}/{startDate}/{endDate}")
+    public ResponseEntity<ResponseModel> getRelatedFinancialGoals(
+            @Parameter(description = "ID of the user to fetch related financial goals for", example = "123")
+            @PathVariable int userId,
+            @Parameter(description = "Start date of the date range", example = "2023-01-01")
+            @PathVariable @Valid @NotEmpty LocalDate startDate,
+            @Parameter(description = "End date of the date range", example = "2023-12-31")
+            @PathVariable @Valid @NotEmpty LocalDate endDate) {
+        return financialGoalService.getRelatedFinancialGoals(userId, startDate, endDate);
+    }
+
+    @Operation(summary = "Add expense to a financial goal")
+    @PostMapping("/addExpense")
+    public ResponseEntity<ResponseModel> addExpense(
+            @Parameter(description = "Expense details to add", schema = @Schema(implementation = GoalAddAmountDto.class))
+            @Valid @RequestBody GoalAddAmountDto amountDto) {
+        return financialGoalService.addExpense(amountDto);
+    }
+}

@@ -26,8 +26,16 @@ spring:
         predicates:
         - Path=/budget/**
         - Path=/expenses/**
-        - Path=/category/**
-        
+        - Path=/category/** 
         filters:
         - AuthenticationFilter
         
+      - id: financial-goal
+        uri:
+          lb://FINANCIAL-GOAL
+        predicates:
+        - Path=/goal/**
+        filters:
+        - AuthenticationFilter
+        
+      

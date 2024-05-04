@@ -1,0 +1,26 @@
+package com.hashedin.financialgoal.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import org.springframework.stereotype.Component;
+
+@Configuration
+public class SecurityConfig {
+	
+	@Bean
+	SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+	    return httpSecurity.csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(request -> {
+                    request.requestMatchers("/user/register", "/user/login").permitAll()
+                            .requestMatchers("/user/test").hasRole("ADMIN") 
+                            .anyRequest().authenticated();
+                })
+                .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
+                .build();
+	}
+
+	
+}
