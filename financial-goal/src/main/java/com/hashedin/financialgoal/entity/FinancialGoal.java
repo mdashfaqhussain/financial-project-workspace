@@ -2,6 +2,10 @@ package com.hashedin.financialgoal.entity;
 
 import java.time.LocalDate;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -38,9 +42,16 @@ public class FinancialGoal {
 
 	private LocalDate endDate;
 
+	@CreationTimestamp
+	private LocalDate createdAt;
+
+	@LastModifiedDate
+	private LocalDate updatedAt;
+
 	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private BudgetUser user;
+	@JoinColumn(referencedColumnName = "id")
+	private BudgetUser user;
+	
 
 	private boolean isActive;
 
@@ -48,10 +59,12 @@ public class FinancialGoal {
 	@PostPersist
 	@PostUpdate
 	private void calculateCurrentAmount() {
-        this.currentAmount = this.totalAmount - this.enteredAmount;
-        if (this.enteredAmount == this.currentAmount) {
-            this.isActive = false;
-        }
-    }
+	    this.currentAmount = this.totalAmount - this.enteredAmount;
+	    if (this.enteredAmount + this.currentAmount == this.totalAmount) {
+	        this.isActive = false;
+	        this.enteredAmount = 0;
+	    }
+	}
+
 
 }

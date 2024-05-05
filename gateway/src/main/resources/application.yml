@@ -6,7 +6,7 @@ eureka:
       defaultZone: http://localhost:8671/eureka
       
 server:
-  port: 8082
+  port: 8084
   
 spring:
   application:
@@ -22,20 +22,18 @@ spring:
       
       - id: budget-expense
         uri:
-          lb://BUDGET-SERVICE
+          lb://BUDGET-EXPENSE
         predicates:
         - Path=/budget/**
         - Path=/expenses/**
         - Path=/category/** 
-        filters:
-        - AuthenticationFilter
+        
         
       - id: financial-goal
         uri:
           lb://FINANCIAL-GOAL
         predicates:
         - Path=/goal/**
-        filters:
-        - AuthenticationFilter
+        
         
       

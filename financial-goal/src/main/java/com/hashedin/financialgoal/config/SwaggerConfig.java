@@ -18,21 +18,21 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 						)
 				
 				
-				),
-		security = @SecurityRequirement(name = "authBearer")
+				)
+		
 		
 		)
 
 
 
-@SecurityScheme(
-		name = "authBearer",
-		in = SecuritySchemeIn.HEADER,
-		type = SecuritySchemeType.HTTP,
-		bearerFormat="JWT",
-		scheme = "bearer",
-		description = "JWT token desc"
-		)
+//@SecurityScheme(
+//		name = "authBearer",
+//		in = SecuritySchemeIn.HEADER,
+//		type = SecuritySchemeType.HTTP,
+//		bearerFormat="JWT",
+//		scheme = "bearer",
+//		description = "JWT token desc"
+//		)
 public class SwaggerConfig {
 
 }

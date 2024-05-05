@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,12 +21,14 @@ import com.hashedin.financialgoal.utility.ResponseModel;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
-
+import lombok.extern.slf4j.Slf4j;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @RestController
 @RequestMapping("/goal")
+@Validated
+@Slf4j
 public class FinancialGoalRepository {
 
     @Autowired
@@ -63,18 +66,18 @@ public class FinancialGoalRepository {
         return financialGoalService.deleteFinancialGoal(goalId);
     }
 
-    @Operation(
-            tags = "All Financial Goals",
-            description = "Get all financial goals",
-            responses = @ApiResponse(
-                    responseCode = "200",
-                    description = "Success"
-            )
-    )
-    @GetMapping("/all")
-    public ResponseEntity<ResponseModel> getAllFinancialGoals() {
-        return financialGoalService.getAllFinancialGoals();
-    }
+//    @Operation(
+//            tags = "All Financial Goals",
+//            description = "Get all financial goals",
+//            responses = @ApiResponse(
+//                    responseCode = "200",
+//                    description = "Success"
+//            )
+//    )
+//    @GetMapping("/all")
+//    public ResponseEntity<ResponseModel> getAllFinancialGoals() {
+//        return financialGoalService.getAllFinancialGoals();
+//    }
 
     @Operation(
             tags = "Update Financial Goal",
@@ -115,6 +118,7 @@ public class FinancialGoalRepository {
     )
     @GetMapping("/user/{userId}")
     public ResponseEntity<ResponseModel> getFinancialGoalsByUserId(@PathVariable int userId) {
+    	log.info("Fetching financial goals for user ID: {}", userId);
         return financialGoalService.getFinancialGoalsByUserId(userId);
     }
 

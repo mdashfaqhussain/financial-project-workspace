@@ -6,6 +6,7 @@
 	</section>
 	<section name="MavenProjectImportWizardPage">
 		<list key="rootDirectory">
+			<item value="/Users/mohammedashfaqhussain/Documents/project-microservice/JWT-Part/budget-expense"/>
 			<item value="/Users/mohammedashfaqhussain/Documents/project-microservice/JWT-Part/financial-goal"/>
 			<item value="/Users/mohammedashfaqhussain/Documents/project-microservice/JWT-Part/gateway"/>
 			<item value="/Users/mohammedashfaqhussain/Documents/project-microservice/JWT-Part/eureka-server"/>

@@ -37,6 +37,9 @@ public class FinancialGoalDto {
     @Future(message = "End date must be in the future")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
+    
+    @NotNull(message = "userid cannot be null")
+    private int userId;
 
     
 }
