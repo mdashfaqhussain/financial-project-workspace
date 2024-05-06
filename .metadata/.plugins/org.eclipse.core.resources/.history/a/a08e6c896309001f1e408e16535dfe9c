@@ -1,5 +1,0 @@
-package com.hashedin.financialgoal.repository;
-
-public interface IFinancialGoalRepository {
-
-}

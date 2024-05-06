@@ -4,36 +4,30 @@ eureka:
     register-with-eureka: true
     service-url:
       defaultZone: http://localhost:8671/eureka
-      
+
 server:
   port: 8084
-  
+
 spring:
   application:
     name: API-GATEWAY
+
   cloud:
     gateway:
       routes:
-      - id: user-service
-        uri:
-          lb://USER-SERVICE
-        predicates:
-        - Path=/user/**
-      
-      - id: budget-expense
-        uri:
-          lb://BUDGET-EXPENSE
-        predicates:
-        - Path=/budget/**
-        - Path=/expenses/**
-        - Path=/category/** 
-        
-        
-      - id: financial-goal
-        uri:
-          lb://FINANCIAL-GOAL
-        predicates:
-        - Path=/goal/**
-        
-        
-      
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user/**
+
+        - id: budget-expense
+          uri: lb://BUDGET-EXPENSE
+          predicates:
+            - Path=/budget/**
+            - Path=/expenses/**
+            - Path=/category/**
+
+        - id: financial-goal
+          uri: lb://FINANCIAL-GOAL
+          predicates:
+            - Path=/goal/**

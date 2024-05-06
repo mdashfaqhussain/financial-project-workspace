@@ -1,5 +1,0 @@
-package com.hashedin.gateway.config;
-
-public class AuthenticationFilter {
-
-}

@@ -1,5 +1,0 @@
-package com.hashedin.gateway.filter;
-
-public class JwtService {
-
-}
