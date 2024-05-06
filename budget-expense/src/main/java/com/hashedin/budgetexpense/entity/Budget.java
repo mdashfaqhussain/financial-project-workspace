@@ -9,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -46,7 +47,7 @@ public class Budget {
 
 	private boolean isActive;
 
-	@OneToMany(mappedBy = "budget")
+	@OneToMany(mappedBy = "budget", cascade = CascadeType.ALL)
 	private List<Expense> expenses;
 
 	@ManyToOne(fetch = FetchType.LAZY)
